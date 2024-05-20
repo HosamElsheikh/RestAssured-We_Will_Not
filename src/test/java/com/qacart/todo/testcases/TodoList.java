@@ -1,5 +1,6 @@
 package com.qacart.todo.testcases;
 
+import com.qacart.todo.models.Todo;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
@@ -10,15 +11,17 @@ import static org.hamcrest.Matchers.*;
 public class TodoList {
     @Test
     public void shouldBeAbleToAddTask(){
-        String body = "{\n" +
-                "    \"isCompleted\": false,\n" +
-                "    \"item\": \"Learn Appium\"\n" +
-                "}";
+//        String body = "{\n" +
+//                "    \"isCompleted\": false,\n" +
+//                "    \"item\": \"Learn Appium\"\n" +
+//                "}";
+        Todo todo = new Todo(false, "Automation Too");
+
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NGE0MDRlZTI4Nzc0MDAxNDk5Nzc5MyIsImZpcnN0TmFtZSI6Ikhvc2FtIiwibGFzdE5hbWUiOiJFbHNoZWlraCIsImlhdCI6MTcxNjE0NTIzN30.7PRojf4zRaW7AeOFVXTQJVaUv-AOUUA9dy03k53bPwg";
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
-                .body(body)
+                .body(todo)
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
                 .when()
@@ -26,20 +29,21 @@ public class TodoList {
                 .then()
                 .log().all()
                 .assertThat().statusCode(201)
-                .assertThat().body("item", equalTo("Learn Appium"))
+                .assertThat().body("item", equalTo("Automation Too"))
                 .assertThat().body("isCompleted", equalTo(false));
     }
 
     @Test
     public void shouldFailToAddTaskIfIsCompletedIsMissing(){
-        String body = "{\n" +
-                "    \"item\": \"Learn Appium\"\n" +
-                "}";
+//        String body = "{\n" +
+//                "    \"item\": \"Learn Appium\"\n" +
+//                "}";
+        Todo todo = new Todo("Automation Too");
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NGE0MDRlZTI4Nzc0MDAxNDk5Nzc5MyIsImZpcnN0TmFtZSI6Ikhvc2FtIiwibGFzdE5hbWUiOiJFbHNoZWlraCIsImlhdCI6MTcxNjE0NTIzN30.7PRojf4zRaW7AeOFVXTQJVaUv-AOUUA9dy03k53bPwg";
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
-                .body(body)
+                .body(todo)
                 .contentType(ContentType.JSON)
                 .auth().oauth2(token)
                 .when()

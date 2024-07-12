@@ -16,6 +16,16 @@ public class Todo {
     @JsonProperty("__v")
     private String v;
 
+    public Todo(Boolean isCompleted, String id, String item, String userID, String createdAt, String v) {
+        this.isCompleted = isCompleted;
+        this.item = item;
+        this.id = id;
+        this.userID = userID;
+        this.createdAt = createdAt;
+        this.v = v;
+    }
+    public Todo(){}
+
     public Todo(Boolean isCompleted, String item) {
         this.isCompleted = isCompleted;
         this.item = item;

@@ -109,6 +109,7 @@ public class TodoTest {
         String token = UserSteps.getUserToken();
         String taskId = TodoSteps.createTaskId(todo, token);
         Response response = TodoApi.deleteTodo(taskId, token);
+        System.out.println("cool");
 
 //                .assertThat().statusCode(200)
 //                .assertThat().body("item", equalTo("Learn Appium"))

@@ -1,9 +1,12 @@
 package com.qacart.todo.testcases;
 
 import com.qacart.todo.apis.UserApi;
+import com.qacart.todo.data.ErrorMessages;
 import com.qacart.todo.models.Error;
 import com.qacart.todo.models.User;
-import io.restassured.http.ContentType;
+import com.qacart.todo.steps.UserSteps;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import static io.restassured.RestAssured.given;
@@ -11,11 +14,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.not;
 
+@Feature("User Feature")
 public class UserTest {
-    @Test
+    @Story("User Feature")
+    @Test(description = "Should be able to Register")
     public void shouldBeAbleToRegister()
     {
-        User user = new User("Hosam", "Elsheikh", "ffa.elsdh@test.com", "12345678");
+        User user = UserSteps.generateUser();
 
         Response response = UserApi.register(user);
 
@@ -25,9 +30,10 @@ public class UserTest {
         assertThat(newUser.getFirstName(), equalTo(user.getFirstName()));
 
     }
-    @Test
+    @Story("User Feature")
+    @Test(description = "Should fail to register with the same Email")
     public void shouldFailToRegisterWithTheSameEmail(){
-        User user = new User("Hosam", "Elsheikh", "hos.elsdh@test.com", "12345678");
+        User user = UserSteps.getRegisteredUser();
 
         Response response = UserApi.register(user);
 
@@ -36,35 +42,37 @@ public class UserTest {
 
 
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(returnedError.getMessage(),equalTo("Email is already exists in the Database"));
+        assertThat(returnedError.getMessage(),equalTo(ErrorMessages.EMAIL_IS_REGISTERED));
     }
-    @Test
+    @Story("User Feature")
+    @Test(description = "Should be able to Login")
     public void shouldBeAbleToLogin(){
-        User user = new User("hos.elsdh@test.com", "12345678");
+        User user = UserSteps.getRegisteredUser();
+        User loginData = new User(user.getEmail(), user.getPassword());
 
-
-        Response response = UserApi.login(user);
+        Response response = UserApi.login(loginData);
 
         User newUser = response.body().as(User.class); //The response body will be like the user class instance.
 
 
         assertThat(response.statusCode(), equalTo(200));
-        assertThat(newUser.getFirstName(), equalTo("Hosam"));
+        assertThat(newUser.getFirstName(), equalTo(user.getFirstName()));
         assertThat(newUser.getAccessToken(), not(equalTo(null)));
     }
-    @Test
+    @Story("User Feature")
+    @Test(description = "Should fail to Login with wrong credentials")
     public void shouldFailToLoginIncorrectCrededntials(){
 
-        User user = new User("hos.elsdh@test.com", "123456f78");
+        User user = UserSteps.getRegisteredUser();
+        User loginData = new User(user.getEmail(), "WrongPassword");
 
-
-        Response response = UserApi.login(user);
+        Response response = UserApi.login(loginData);
 
 
         Error returnedError = response.body().as(Error.class);
 
 
         assertThat(response.statusCode(), equalTo(401));
-        assertThat(returnedError.getMessage(),equalTo("The email and password combination is not correct, please fill a correct email and password"));
+        assertThat(returnedError.getMessage(),equalTo(ErrorMessages.EMAIL_OR_PASSWORD_INCORRECT));
     }
 }

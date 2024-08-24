@@ -38,6 +38,7 @@ public class TodoApi {
         Response response = given()
                 .spec(Specs.getRequestSpecs())
                 .auth().oauth2(token)
+
                 .when()
                 .delete(Route.TODOS_ROUTE + "/" + taskId)
                 .then()
